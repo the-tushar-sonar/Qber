@@ -1,10 +1,19 @@
-const http = require('http')
-const app = require('./app')
-const port = process.env.PORT || 3000;
+require("dotenv").config();
+const express = require("express");
+const connectToDb = require("./db/db");
 
-const server = http.createServer(app);
+const app = express();
+app.use(express.json());
 
+// Connect to MongoDB
+connectToDb();
 
-server.listen(port,() => {
-    console.log(`Server is running on port ${port}`);
+// Routes
+// const userRoutes = require("./routes/user.routes");
+// app.use("/api/users", userRoutes);
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 });
