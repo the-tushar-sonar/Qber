@@ -1,6 +1,6 @@
 # User Registration API Documentation
 
-## Register User
+## 1. Register User
 Creates a new user account.
 
 ### Endpoint
@@ -69,30 +69,70 @@ POST /users/register
 - First name must be at least 3 characters long.
 - Password must be at least 6 characters long.
 
-## How to Use
+## 2. Login User
+Authenticates a user and returns a JWT token.
 
-1. **Install Dependencies:**
-   ```bash
-   npm install
-   ```
+### Endpoint
+```http
+POST /users/login
+```
 
-2. **Set Up Environment Variables:**
-   Create a `.env` file in the root directory and add the following:
-   ```env
-   PORT=3000
-   DB_CONNECT=mongodb+srv://<username>:<password>@cluster0.mongodb.net/blogDB?retryWrites=true&w=majority
-   JWT_SECRET=your_jwt_secret
-   ```
+### Request Body
+| Field   | Type   | Description                        | Required |
+|---------|--------|------------------------------------|----------|
+| email   | string | User's registered email address    | Yes      |
+| password| string | User's password                    | Yes      |
 
-3. **Run the Server:**
-   ```bash
-   npx nodemon server.js
-   ```
+### Example Request
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
 
-4. **Send a POST Request:**
-   Use a tool like Postman or cURL to send a POST request to `http://localhost:3000/users/register` with the request body as shown above.
+### Response Codes
+| Status Code | Description               |
+|-------------|---------------------------|
+| 200         | Login successful          |
+| 400         | Invalid input data        |
+| 401         | Invalid email or password |
+| 500         | Internal server error     |
+
+### Example Success Response
+```json
+{
+  "user": {
+    "_id": "60d0fe4f5311236168a109ca",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "user@example.com",
+    "socketId": null
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### Example Error Response
+```json
+{
+  "error": "Invalid email or password"
+}
+```
+
+### Validation Rules
+- Email must be a valid email address.
+- Password must be at least 6 characters long.
+
+### Authentication
+The response includes a JWT token that should be included in subsequent requests in the Authorization header:
+```http
+Authorization: Bearer <token>
+```
 
 ---
 
-This documentation provides a clear overview of the registration endpoint, including request/response formats and validation rules. It also includes instructions on how to set up and run the server.
+This documentation provides a clear overview of the `/users/register` and `/users/login` endpoints, including request/response formats, validation rules, and authentication details. It also includes instructions on how to set up and run the server.
 
