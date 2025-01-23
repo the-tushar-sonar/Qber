@@ -1,4 +1,8 @@
-# User Registration API Documentation
+It seems you are working on documentation for a User Management API, covering endpoints for registration, login, retrieving user profiles, and logging out. Here's how the full documentation could be organized and refined for better clarity and consistency. Let me know if you'd like assistance formatting or expanding this further:
+
+---
+
+# User Management API Documentation
 
 ## 1. Register User
 Creates a new user account.
@@ -8,7 +12,7 @@ Creates a new user account.
 POST /users/register
 ```
 
-### Request Body
+#### Request Body
 | Field               | Type   | Description                           | Required |
 |---------------------|--------|---------------------------------------|----------|
 | email               | string | User's email address                  | Yes      |
@@ -16,7 +20,7 @@ POST /users/register
 | fullname.lastname   | string | User's last name                      | No       |
 | password            | string | User's password (min 6 characters)    | Yes      |
 
-### Example Request
+#### Example Request
 ```json
 {
   "email": "user@example.com",
@@ -28,7 +32,7 @@ POST /users/register
 }
 ```
 
-### Response Codes
+#### Response Codes
 | Status Code | Description               |
 |-------------|---------------------------|
 | 200         | User successfully registered |
@@ -36,7 +40,8 @@ POST /users/register
 | 409         | Email already exists       |
 | 500         | Internal server error      |
 
-### Example Success Response
+#### Example Responses
+**Success**
 ```json
 {
   "user": {
@@ -51,7 +56,7 @@ POST /users/register
 }
 ```
 
-### Example Error Response
+**Error**
 ```json
 {
   "error": [
@@ -64,10 +69,7 @@ POST /users/register
 }
 ```
 
-### Validation Rules
-- Email must be a valid email address.
-- First name must be at least 3 characters long.
-- Password must be at least 6 characters long.
+---
 
 ## 2. Login User
 Authenticates a user and returns a JWT token.
@@ -77,13 +79,13 @@ Authenticates a user and returns a JWT token.
 POST /users/login
 ```
 
-### Request Body
-| Field   | Type   | Description                        | Required |
-|---------|--------|------------------------------------|----------|
-| email   | string | User's registered email address    | Yes      |
-| password| string | User's password                    | Yes      |
+#### Request Body
+| Field    | Type   | Description                        | Required |
+|----------|--------|------------------------------------|----------|
+| email    | string | User's registered email address    | Yes      |
+| password | string | User's password                    | Yes      |
 
-### Example Request
+#### Example Request
 ```json
 {
   "email": "user@example.com",
@@ -91,7 +93,7 @@ POST /users/login
 }
 ```
 
-### Response Codes
+#### Response Codes
 | Status Code | Description               |
 |-------------|---------------------------|
 | 200         | Login successful          |
@@ -99,7 +101,8 @@ POST /users/login
 | 401         | Invalid email or password |
 | 500         | Internal server error     |
 
-### Example Success Response
+#### Example Responses
+**Success**
 ```json
 {
   "user": {
@@ -115,24 +118,103 @@ POST /users/login
 }
 ```
 
-### Example Error Response
+**Error**
 ```json
 {
   "error": "Invalid email or password"
 }
 ```
 
-### Validation Rules
-- Email must be a valid email address.
-- Password must be at least 6 characters long.
+#### Notes
+- Include the JWT token in the Authorization header for authenticated requests:
+  ```http
+  Authorization: Bearer <token>
+  ```
 
-### Authentication
-The response includes a JWT token that should be included in subsequent requests in the Authorization header:
+---
+
+## 3. Get User Profile
+Retrieves the authenticated user's profile information.
+
+### Endpoint
 ```http
-Authorization: Bearer <token>
+GET /users/profile
+```
+
+#### Headers
+| Field           | Value           | Required |
+|------------------|-----------------|----------|
+| Authorization    | Bearer `<token>` | Yes      |
+
+#### Response Codes
+| Status Code | Description                      |
+|-------------|----------------------------------|
+| 200         | Profile retrieved successfully  |
+| 401         | Unauthorized - Invalid or missing token |
+| 500         | Internal server error           |
+
+#### Example Responses
+**Success**
+```json
+{
+  "_id": "60d0fe4f5311236168a109ca",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "user@example.com",
+  "socketId": null
+}
+```
+
+**Error**
+```json
+{
+  "error": "Unauthorized"
+}
 ```
 
 ---
 
-This documentation provides a clear overview of the `/users/register` and `/users/login` endpoints, including request/response formats, validation rules, and authentication details. It also includes instructions on how to set up and run the server.
+## 4. Logout User
+Logs out the user by blacklisting the current JWT token.
+
+### Endpoint
+```http
+GET /users/logout
+```
+
+#### Headers
+| Field           | Value           | Required |
+|------------------|-----------------|----------|
+| Authorization    | Bearer `<token>` | Yes      |
+
+#### Response Codes
+| Status Code | Description                      |
+|-------------|----------------------------------|
+| 200         | Logout successful               |
+| 401         | Unauthorized - Invalid or missing token |
+| 500         | Internal server error           |
+
+#### Example Responses
+**Success**
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+**Error**
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+#### Notes
+- The token used for authentication will be blacklisted.
+- Subsequent requests with the same token will be rejected.
+- The cookie containing the token will be cleared.
+
+---
 
